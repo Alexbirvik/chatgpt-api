@@ -5,6 +5,9 @@ Use ChatGPT API in a local web app
 
 ## Setup Instructions
 
+Create a .env file and put your API key there:
+OPENAI_API_KEY=your-api-key
+
 in the backend folder execute `npm install`
 In the frontend folder execute `npm install` 
 
