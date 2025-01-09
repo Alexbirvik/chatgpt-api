@@ -4,7 +4,7 @@ import remarkGfm from 'remark-gfm';
 
 const TOKEN_PRICES = {
   'gpt-4': { input: 0.03 / 1000, output: 0.06 / 1000 },
-  'o1-2024-12-17': { input: 0.015 / 1000, output: 0.06 / 1000 },
+  'o1-preview': { input: 0.015 / 1000, output: 0.06 / 1000 },
   'gpt-4o-2024-08-06': { input: 0.0025 / 1000, output: 0.01 / 1000 },
   'gpt-4o-mini': { input: 0.00015 / 1000, output: 0.0006 / 1000 },
 };
@@ -86,12 +86,6 @@ export default function ChatInterface() {
               <code {...props}>{children}</code>
             </pre>
           );
-        },
-        li({ children }) {
-          return <li style={styles.bulletPoint}>{children}</li>;
-        },
-        p({ children }) {
-          return <p style={styles.paragraph}>{children}</p>;
         },
       }}
     >
@@ -230,5 +224,19 @@ const styles = {
     backgroundColor: '#007aff',
     color: '#fff',
     cursor: 'pointer',
+  },
+  codeBlock: {
+    backgroundColor: '#2f3640',
+    color: '#2ed573',
+    padding: '10px',
+    borderRadius: '4px',
+    overflowX: 'auto',
+  },
+  inlineCode: {
+    backgroundColor: '#2f3640',
+    color: '#2ed573',
+    padding: '10px',
+    borderRadius: '4px',
+    overflowX: 'auto',
   },
 };
