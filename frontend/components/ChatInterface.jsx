@@ -118,7 +118,7 @@ export default function ChatInterface() {
             style={msg.role === 'user' ? styles.userMessage : styles.assistantMessage}
           >
             <strong>{msg.role}:</strong>
-            {msg.role === 'assistant' || 'user' ? formatText(msg.content) : <span>{msg.content}</span>}
+            {['assistant', 'user'].includes(msg.role) ? formatText(msg.content) : <span>{msg.content}</span>}
           </div>
         ))}
       </div>
