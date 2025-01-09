@@ -227,14 +227,14 @@ const styles = {
   },
   codeBlock: {
     backgroundColor: '#2f3640',
-    color: '#2ed573',
+    color: '#26de81',
     padding: '10px',
     borderRadius: '4px',
     overflowX: 'auto',
   },
   inlineCode: {
     backgroundColor: '#2f3640',
-    color: '#2ed573',
+    color: '#26de81',
     padding: '10px',
     borderRadius: '4px',
     overflowX: 'auto',
