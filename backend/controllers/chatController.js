@@ -16,7 +16,7 @@ export default async (req, res) => {
     const response = await axios.post(
       OPENAI_API_URL,
       {
-        model: model || 'gpt-4o-2024-08-06', // Use the model from the frontend, default to 'gpt-4o-mini' if not provided
+        model: model || 'gpt-4o-2024-08-06', // Use the model from the frontend, default to 'gpt-4o' if not provided
         messages
       },
       {

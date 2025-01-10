@@ -19,22 +19,28 @@ export default function ChatInterface() {
   const [error, setError] = useState(null);
   const inputRef = useRef(null);
 
-  const markdownComponents = {
-    code: ({ node, inline, className, children, ...props }) => {
-      const match = /language-(\w+)/.exec(className || '');
-      return !inline ? (
-        <pre style={styles.codeBlock}>
-          <code className={className} {...props}>
-            {children}
-          </code>
-        </pre>
-      ) : (
-        <code style={styles.inlineCode} {...props}>
-          {children}
-        </code>
-      );
-    }
-  };
+  const formatText = (text) => (
+    <ReactMarkdown
+      remarkPlugins={[remarkGfm]}
+      components={{
+        code({ node, inline, className, children, ...props }) {
+          return inline ? (
+            <code style={styles.inlineCode} {...props}>
+              {children}
+            </code>
+          ) : (
+            <pre style={styles.codeBlock}>
+              <code {...props}>
+                {children}
+              </code>
+            </pre>
+          );
+        },
+      }}
+    >
+      {text}
+    </ReactMarkdown>
+  );
 
   useEffect(() => {
     document.body.style.backgroundColor = '#f1f2f6';
@@ -80,37 +86,9 @@ export default function ChatInterface() {
     }
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey && !loading) {
-      e.preventDefault();
-      sendMessage();
-    }
-  };
-
   const handleModelChange = (e) => {
     setModel(e.target.value);
   };
-
-  const formatText = (text) => (
-    <ReactMarkdown
-      remarkPlugins={[remarkGfm]}
-      components={{
-        code({ node, inline, className, children, ...props }) {
-          return inline ? (
-            <code style={styles.inlineCode} {...props}>
-              {children}
-            </code>
-          ) : (
-            <pre style={styles.codeBlock}>
-              <code {...props}>{children}</code>
-            </pre>
-          );
-        },
-      }}
-    >
-      {text}
-    </ReactMarkdown>
-  );
 
   return (
     <div style={styles.container}>
@@ -128,7 +106,16 @@ export default function ChatInterface() {
 
         <h1 style={styles.title}>Local ChatGPT</h1>
 
-        <select value={model} onChange={handleModelChange} style={styles.modelSwitcher}>
+        <select 
+          value={model} 
+          onChange={(e) => setModel(e.target.value)}
+          disabled={loading}
+          style={{
+            ...styles.modelSwitcher,
+            opacity: loading ? 0.7 : 1,
+            cursor: loading ? 'not-allowed' : 'pointer'
+          }}
+        >
           <option value="gpt-4">GPT-4💸💸</option>
           <option value="o1-preview">GPT-o1💸</option>
           <option value="gpt-4o-2024-08-06">GPT-4o</option>
@@ -145,14 +132,12 @@ export default function ChatInterface() {
               opacity: loading && index === messages.length - 1 ? 0.5 : 1
             }}
           >
-            <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
-              {message.content}
-            </ReactMarkdown>
+            {formatText(message.content)}
           </div>
         ))}
         {loading && (
           <div style={styles.loadingIndicator}>
-            <div style={styles.typingDots}>
+            <div className="typing-dots">
               <span>.</span><span>.</span><span>.</span>
             </div>
           </div>
@@ -163,7 +148,12 @@ export default function ChatInterface() {
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && sendMessage()}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey && !loading) {
+              e.preventDefault();
+              sendMessage();
+            }
+          }}
           placeholder="Type your message..."
           disabled={loading}
           style={{
@@ -230,7 +220,8 @@ const styles = {
     fontSize: '14px',
     borderRadius: '4px',
     border: '1px solid #ccc',
-    cursor: 'pointer',
+    backgroundColor: '#fff',
+    transition: 'opacity 0.2s ease',
   },
   messageContainer: {
     flex: 1,
@@ -301,33 +292,5 @@ const styles = {
     justifyContent: 'center',
     padding: '10px',
     color: '#666',
-  },
-  typingDots: {
-    display: 'flex',
-    gap: '3px',
-    '& span': {
-      animation: 'typingDots 1.4s infinite',
-      fontSize: '20px',
-    },
-    '& span:nth-child(2)': {
-      animationDelay: '0.2s',
-    },
-    '& span:nth-child(3)': {
-      animationDelay: '0.4s',
-    },
-  },
-  '@keyframes typingDots': {
-    '0%, 20%': {
-      transform: 'translateY(0)',
-      opacity: 0.2,
-    },
-    '50%': {
-      transform: 'translateY(-5px)',
-      opacity: 1,
-    },
-    '80%, 100%': {
-      transform: 'translateY(0)',
-      opacity: 0.2,
-    },
   },
 };
