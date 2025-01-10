@@ -16,8 +16,25 @@ export default function ChatInterface() {
   const [model, setModel] = useState('gpt-4o-2024-08-06');
   const [currentCost, setCurrentCost] = useState(0);
   const [totalCost, setTotalCost] = useState(0);
-  const inputRef = useRef(null);
   const [error, setError] = useState(null);
+  const inputRef = useRef(null);
+
+  const markdownComponents = {
+    code: ({ node, inline, className, children, ...props }) => {
+      const match = /language-(\w+)/.exec(className || '');
+      return !inline ? (
+        <pre style={styles.codeBlock}>
+          <code className={className} {...props}>
+            {children}
+          </code>
+        </pre>
+      ) : (
+        <code style={styles.inlineCode} {...props}>
+          {children}
+        </code>
+      );
+    }
+  };
 
   useEffect(() => {
     document.body.style.backgroundColor = '#f1f2f6';
@@ -33,7 +50,6 @@ export default function ChatInterface() {
     setMessages(newMessages);
     setInput('');
     setLoading(true);
-    setError(null);
 
     try {
       const response = await fetch('/api/chat', {
@@ -120,29 +136,52 @@ export default function ChatInterface() {
         </select>
       </div>
 
-      <div style={styles.chatBox}>
-        {messages.map((msg, index) => (
+      <div style={styles.messageContainer}>
+        {messages.map((message, index) => (
           <div
             key={index}
-            style={msg.role === 'user' ? styles.userMessage : styles.assistantMessage}
+            style={{
+              ...styles[`${message.role}Message`],
+              opacity: loading && index === messages.length - 1 ? 0.5 : 1
+            }}
           >
-            <strong>{msg.role}:</strong>
-            {['assistant', 'user'].includes(msg.role) ? formatText(msg.content) : <span>{msg.content}</span>}
+            <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
+              {message.content}
+            </ReactMarkdown>
           </div>
         ))}
+        {loading && (
+          <div style={styles.loadingIndicator}>
+            <div style={styles.typingDots}>
+              <span>.</span><span>.</span><span>.</span>
+            </div>
+          </div>
+        )}
       </div>
 
       <div style={styles.inputContainer}>
         <textarea
-          ref={inputRef}
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="Type your message... (Shift+Enter for new line)"
-          style={styles.textarea}
+          onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && sendMessage()}
+          placeholder="Type your message..."
+          disabled={loading}
+          style={{
+            ...styles.textarea,
+            opacity: loading ? 0.7 : 1,
+            cursor: loading ? 'not-allowed' : 'text'
+          }}
         />
-        <button onClick={sendMessage} disabled={loading} style={styles.button}>
-          {loading ? 'Loading...' : 'Send'}
+        <button 
+          onClick={sendMessage} 
+          disabled={loading} 
+          style={{
+            ...styles.button,
+            opacity: loading ? 0.7 : 1,
+            cursor: loading ? 'not-allowed' : 'pointer'
+          }}
+        >
+          {loading ? 'Sending...' : 'Send'}
         </button>
       </div>
     </div>
@@ -193,7 +232,7 @@ const styles = {
     border: '1px solid #ccc',
     cursor: 'pointer',
   },
-  chatBox: {
+  messageContainer: {
     flex: 1,
     overflowY: 'auto',
     border: '1px solid #e0e0e0',
@@ -256,5 +295,39 @@ const styles = {
     marginBottom: '10px',
     textAlign: 'center',
     fontSize: '14px',
+  },
+  loadingIndicator: {
+    display: 'flex',
+    justifyContent: 'center',
+    padding: '10px',
+    color: '#666',
+  },
+  typingDots: {
+    display: 'flex',
+    gap: '3px',
+    '& span': {
+      animation: 'typingDots 1.4s infinite',
+      fontSize: '20px',
+    },
+    '& span:nth-child(2)': {
+      animationDelay: '0.2s',
+    },
+    '& span:nth-child(3)': {
+      animationDelay: '0.4s',
+    },
+  },
+  '@keyframes typingDots': {
+    '0%, 20%': {
+      transform: 'translateY(0)',
+      opacity: 0.2,
+    },
+    '50%': {
+      transform: 'translateY(-5px)',
+      opacity: 1,
+    },
+    '80%, 100%': {
+      transform: 'translateY(0)',
+      opacity: 0.2,
+    },
   },
 };
