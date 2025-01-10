@@ -291,6 +291,8 @@ const styles = {
     display: 'flex',
     justifyContent: 'center',
     padding: '10px',
-    color: '#666',
+    color: '#007aff',
+    fontSize: '32px',
+    lineHeight: '24px',
   },
 };
