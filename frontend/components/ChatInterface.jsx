@@ -17,6 +17,7 @@ export default function ChatInterface() {
   const [currentCost, setCurrentCost] = useState(0);
   const [totalCost, setTotalCost] = useState(0);
   const inputRef = useRef(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     document.body.style.backgroundColor = '#f1f2f6';
@@ -32,6 +33,7 @@ export default function ChatInterface() {
     setMessages(newMessages);
     setInput('');
     setLoading(true);
+    setError(null);
 
     try {
       const response = await fetch('/api/chat', {
@@ -55,6 +57,7 @@ export default function ChatInterface() {
       setMessages([...newMessages, { role: 'assistant', content: data.choices[0].message.content }]);
     } catch (error) {
       console.error('Error:', error);
+      setError(error.message || 'Failed to send message. Please try again.');
     } finally {
       setLoading(false);
       inputRef.current?.focus();
@@ -95,6 +98,12 @@ export default function ChatInterface() {
 
   return (
     <div style={styles.container}>
+      {error && (
+        <div style={styles.errorMessage}>
+          {error}
+        </div>
+      )}
+
       <div style={styles.titleContainer}>
         <div style={styles.costContainer}>
           <span>Request Cost: ${currentCost.toFixed(6)}</span>
@@ -238,5 +247,14 @@ const styles = {
     padding: '10px',
     borderRadius: '4px',
     overflowX: 'auto',
+  },
+  errorMessage: {
+    backgroundColor: '#ffebee',
+    color: '#c62828',
+    padding: '10px',
+    borderRadius: '4px',
+    marginBottom: '10px',
+    textAlign: 'center',
+    fontSize: '14px',
   },
 };
