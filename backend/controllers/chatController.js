@@ -31,6 +31,7 @@ export default async (req, res) => {
     res.json({
         choices: response.data.choices,
         usage: response.data.usage,
+        model: response.data.model,
     });
       
   } catch (error) {

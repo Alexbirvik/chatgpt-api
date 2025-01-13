@@ -227,8 +227,8 @@ const styles = {
     flex: 1,
     overflowY: 'auto',
     border: '1px solid #e0e0e0',
-    borderRadius: '4px',
-    padding: '10px',
+    borderRadius: '6px',
+    padding: '10px 15px',
     marginBottom: '20px',
     backgroundColor: '#fafafa',
   },
@@ -251,7 +251,7 @@ const styles = {
     flex: 1,
     padding: '10px',
     fontSize: '14px',
-    borderRadius: '4px',
+    borderRadius: '6px',
     border: '1px solid #ccc',
   },
   button: {
@@ -292,7 +292,7 @@ const styles = {
     justifyContent: 'center',
     padding: '10px',
     color: '#007aff',
-    fontSize: '32px',
+    fontSize: '42px',
     lineHeight: '24px',
   },
 };

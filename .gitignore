@@ -1,13 +1,11 @@
 # Ignore .env file
 backend/.env
 
-# Ignore node_modules folders in both backend and frontend
-backend/node_modules/
-frontend/node_modules/
+# Ignore all node_modules folders
+**/node_modules/
 
 # Ignore .next folder
 frontend/.next/
 
-# Ignore package-lock.json files (if needed)
-backend/package-lock.json
-frontend/package-lock.json
+# Ignore package-lock.json
+**/package-lock.json
